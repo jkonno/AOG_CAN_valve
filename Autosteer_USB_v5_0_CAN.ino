@@ -65,7 +65,6 @@
       bool seq = 0;         // sequential frames
     }; 
 
-  int16_t deadband = 50;         // Deadband for blocking flow, this is the flow command value
   bool useJ1939WAS = false;      // CAN bus or analog WAS
   
   void readJ1939WAS(CAN_message_t &msg);
@@ -453,10 +452,10 @@
             steeringPosition = (steeringPosition - 6805  + steerSettings.wasOffset);   // 1/2 of full scale
             steerAngleActual = (float)(steeringPosition) / steerSettings.steerSensorCounts; 
         }
-      }
       
-      //Ackerman fix
-      if (steerAngleActual < 0) steerAngleActual = (steerAngleActual * steerSettings.AckermanFix);
+        //Ackerman fix
+        if (steerAngleActual < 0) steerAngleActual = (steerAngleActual * steerSettings.AckermanFix);
+      }
       
       if (watchdogTimer < WATCHDOG_THRESHOLD)
       {    
@@ -788,7 +787,7 @@
       temp = (uint16_t) msg.buf[0] << 8;
       temp |= (uint16_t) msg.buf[1];
       steeringPosition = (int)temp;
-      if (steeringPosition > 1800) steeringPosition = steeringPosition - 3600;
+      //if (steeringPosition > 1800) steeringPosition = steeringPosition - 3600;
       if (steerConfig.InvertWAS)
       {
         steeringPosition = (steeringPosition - steerSettings.wasOffset);   // 1/2 of full scale
@@ -798,6 +797,8 @@
       {
         steeringPosition = (steeringPosition + steerSettings.wasOffset);   // 1/2 of full scale
         steerAngleActual = (float)(steeringPosition) / steerSettings.steerSensorCounts;
-      }       
+      }
+      //Ackerman fix
+      if (steerAngleActual < 0) steerAngleActual = (steerAngleActual * steerSettings.AckermanFix);     
     }
   }

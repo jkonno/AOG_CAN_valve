@@ -24,7 +24,7 @@ void calcSteeringPID(void)
   if (pwmDrive > newMax) pwmDrive = newMax;
   if (pwmDrive < -newMax) pwmDrive = -newMax;
 
-  if (errorAbs < 0.3) pwmDrive = 0;
+  //if (errorAbs < 0.3) pwmDrive = 0;
 
   if (steerConfig.MotorDriveDirection) pwmDrive *= -1;
   
@@ -36,19 +36,17 @@ void motorDrive(void)
   {
     //EDIT FOR CAN VALVE START
     // Used with Isobus message CAN valve
-    if (pwmDrive > deadband)
+    if (pwmDrive > 0)
     {
       flowCommand.buf[2]=0x01;  //set the correct direction
-      lastDir = 0x01;
     }
-    else if (pwmDrive < -deadband) 
+    else if (pwmDrive < 0) 
     {
       flowCommand.buf[2]=0x02;
-      lastDir=0x02;
       pwmDrive = -pwmDrive;
     } else
     {
-      flowCommand.buf[2]=0x01;
+      flowCommand.buf[2]=0x00;
       pwmDrive = 0;
     }
     //write out the 0 to 255 value
